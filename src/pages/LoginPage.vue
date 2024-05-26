@@ -5,6 +5,7 @@
         <div class="container">
           <div class="left-container">
             <h1>Sign In</h1>
+            <p class="subtitle">Welcome to Feature Flag</p>
             <div class="form">
               <q-input
                 v-model="email"
@@ -24,6 +25,7 @@
                 label="Password"
                 filled
                 input-style="font-size: 17px"
+                @keydown.enter="onLogin"
               >
                 <template v-slot:append>
                   <q-icon
@@ -141,6 +143,18 @@ const onLogin = async () => {
         width: 100%;
         padding: 24px;
         text-align: center;
+      }
+
+      .subtitle {
+        display: none;
+        margin-top: 12px;
+        color: $primary;
+        font-size: 16px;
+        font-weight: bold;
+
+        @media (width < 768px) {
+          display: block;
+        }
       }
 
       .form {
