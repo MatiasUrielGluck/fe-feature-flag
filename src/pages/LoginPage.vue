@@ -49,7 +49,10 @@
                 Sign In
               </q-btn>
               <p class="text-weight-medium secondary-link">Forgot Password</p>
-              <p class="text-weight-medium secondary-link mobile-signup">
+              <p
+                class="text-weight-medium secondary-link mobile-signup"
+                @click="$router.push('/signup')"
+              >
                 Don't have an account? <span>Sign up</span>
               </p>
             </div>
