@@ -33,6 +33,11 @@
                   />
                 </template>
               </q-input>
+
+              <p :class="['error-msg', showErrorMsg ? 'active' : '']">
+                Please check your email and password
+              </p>
+
               <q-btn
                 no-caps
                 rounded
@@ -44,7 +49,6 @@
               </q-btn>
               <p class="text-weight-medium forgot-pwd">Forgot Password</p>
             </div>
-            <div class="form-actions"></div>
           </div>
           <div class="right-container">
             <h1>Welcome to Feature Flag</h1>
@@ -80,6 +84,7 @@ const $q = useQuasar();
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
+const showErrorMsg = ref(false);
 
 const onLogin = async () => {
   const loginDTO: LoginDTO = {
@@ -92,10 +97,11 @@ const onLogin = async () => {
     console.warn(response);
   } catch (e) {
     console.error(e);
+    showErrorMsg.value = true;
     $q.notify({
       position: 'top',
       type: 'negative',
-      message: 'Error',
+      message: 'Invalid email or password',
       actions: [
         {
           icon: 'close',
@@ -164,6 +170,17 @@ const onLogin = async () => {
         .forgot-pwd {
           color: $dark;
           cursor: pointer;
+        }
+
+        .error-msg {
+          color: $negative;
+          margin: 0;
+          opacity: 0;
+          transition: all 0.3s ease;
+
+          &.active {
+            opacity: 100%;
+          }
         }
       }
     }
