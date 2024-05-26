@@ -20,7 +20,7 @@
               </q-input>
 
               <q-input
-                v-model="password"
+                v-model.trim="password"
                 :type="showPassword ? 'text' : 'password'"
                 label="Password"
                 filled
@@ -82,7 +82,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import LoginDTO from 'src/dto/authentication/LoginDTO';
-import { login } from 'src/services/authentication.service';
+import {
+  authenticate,
+  destroyAuthentication,
+} from 'src/helpers/authenticationHelper';
 
 defineOptions({
   name: 'LoginPage',
@@ -96,14 +99,13 @@ const showErrorMsg = ref(false);
 const onLogin = async () => {
   const loginDTO: LoginDTO = {
     email: email.value,
-    password: password.value.trim(),
+    password: password.value,
   };
-
   try {
-    const response = await login(loginDTO);
-    console.warn(response);
+    await authenticate(loginDTO);
   } catch (e) {
     console.error(e);
+    destroyAuthentication();
     showErrorMsg.value = true;
   }
 };
