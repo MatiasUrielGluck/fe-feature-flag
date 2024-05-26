@@ -33,12 +33,11 @@
                   />
                 </template>
               </q-input>
-
-              <transition name="fade">
-                <p v-show="showErrorMsg" class="error-msg">
-                  Please check your email and password
-                </p>
-              </transition>
+            </div>
+            <div class="form-actions">
+              <p :class="['error-msg', showErrorMsg ? 'active' : '']">
+                Please check your email and password
+              </p>
 
               <q-btn
                 no-caps
@@ -49,7 +48,10 @@
               >
                 Sign In
               </q-btn>
-              <p class="text-weight-medium forgot-pwd">Forgot Password</p>
+              <p class="text-weight-medium secondary-link">Forgot Password</p>
+              <p class="text-weight-medium secondary-link mobile-signup">
+                Don't have an account? <span>Sign up</span>
+              </p>
             </div>
           </div>
           <div class="right-container">
@@ -76,7 +78,6 @@
 import { ref } from 'vue';
 import LoginDTO from 'src/dto/authentication/LoginDTO';
 import { login } from 'src/services/authentication.service';
-import { showSnackbar } from 'src/utils/snackbar';
 
 defineOptions({
   name: 'LoginPage',
@@ -99,7 +100,6 @@ const onLogin = async () => {
   } catch (e) {
     console.error(e);
     showErrorMsg.value = true;
-    showSnackbar('success', 'Invalid email or password');
   }
 };
 </script>
@@ -146,8 +146,14 @@ const onLogin = async () => {
         display: flex;
         flex-flow: column nowrap;
         gap: 24px;
+      }
+
+      .form-actions {
+        margin-top: 12px;
 
         .left-btn {
+          margin-top: 12px;
+          width: 100%;
           height: 40px;
           background: rgb(55, 140, 231);
           background: linear-gradient(
@@ -157,14 +163,32 @@ const onLogin = async () => {
           );
         }
 
-        .forgot-pwd {
+        .secondary-link {
+          margin-top: 24px;
           color: $dark;
           cursor: pointer;
+        }
+
+        .mobile-signup {
+          display: none;
+          span {
+            color: #378ce7;
+          }
+
+          @media (width < 768px) {
+            display: block;
+          }
         }
 
         .error-msg {
           color: $negative;
           margin: 0;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+
+          &.active {
+            opacity: 100%;
+          }
         }
       }
     }
@@ -185,8 +209,7 @@ const onLogin = async () => {
       );
 
       @media (width < 768px) {
-        width: 100%;
-        height: 100vh;
+        display: none;
       }
 
       h1,
