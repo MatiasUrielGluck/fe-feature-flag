@@ -5,11 +5,13 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    meta: { transition: 'fade' },
   },
 
   {
     path: '/login',
     component: () => import('pages/LoginPage.vue'),
+    meta: { transition: 'fade' },
   },
 
   // Always leave this as last one,
@@ -17,6 +19,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),
+    meta: { transition: 'fade' },
   },
 ];
 

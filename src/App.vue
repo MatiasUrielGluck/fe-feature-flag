@@ -1,9 +1,14 @@
 <template>
-  <router-view />
+  <router-view v-slot="{ Component, route }">
+    <!-- Use a custom transition or fallback to `fade` -->
+    <transition :name="route.meta.transition || 'fade'">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
-<script setup lang="ts">
+<script setup>
 defineOptions({
-  name: 'App'
+  name: 'App',
 });
 </script>
