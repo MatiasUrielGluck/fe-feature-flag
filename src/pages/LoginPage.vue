@@ -34,9 +34,11 @@
                 </template>
               </q-input>
 
-              <p :class="['error-msg', showErrorMsg ? 'active' : '']">
-                Please check your email and password
-              </p>
+              <transition name="fade">
+                <p v-show="showErrorMsg" class="error-msg">
+                  Please check your email and password
+                </p>
+              </transition>
 
               <q-btn
                 no-caps
@@ -74,13 +76,12 @@
 import { ref } from 'vue';
 import LoginDTO from 'src/dto/authentication/LoginDTO';
 import { login } from 'src/services/authentication.service';
-import { useQuasar } from 'quasar';
+import { showSnackbar } from 'src/utils/snackbar';
 
 defineOptions({
   name: 'LoginPage',
 });
 
-const $q = useQuasar();
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
@@ -98,18 +99,7 @@ const onLogin = async () => {
   } catch (e) {
     console.error(e);
     showErrorMsg.value = true;
-    $q.notify({
-      position: 'top',
-      type: 'negative',
-      message: 'Invalid email or password',
-      actions: [
-        {
-          icon: 'close',
-          color: 'white',
-          round: true,
-        },
-      ],
-    });
+    showSnackbar('success', 'Invalid email or password');
   }
 };
 </script>
@@ -175,12 +165,6 @@ const onLogin = async () => {
         .error-msg {
           color: $negative;
           margin: 0;
-          opacity: 0;
-          transition: all 0.3s ease;
-
-          &.active {
-            opacity: 100%;
-          }
         }
       }
     }
