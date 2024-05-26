@@ -86,10 +86,13 @@ import {
   authenticate,
   destroyAuthentication,
 } from 'src/helpers/authenticationHelper';
+import { useRouter } from 'vue-router';
 
 defineOptions({
   name: 'LoginPage',
 });
+
+const router = useRouter();
 
 const email = ref('');
 const password = ref('');
@@ -103,6 +106,7 @@ const onLogin = async () => {
   };
   try {
     await authenticate(loginDTO);
+    await router.push('/home');
   } catch (e) {
     console.error(e);
     destroyAuthentication();

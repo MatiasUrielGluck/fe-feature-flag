@@ -7,6 +7,11 @@ import {
 } from 'vue-router';
 
 import routes from './routes';
+import {
+  destroyAuthentication,
+  setAccountInfo,
+} from 'src/helpers/authenticationHelper';
+import { useAccountStore } from 'stores/account-store';
 
 /*
  * If not building with SSR mode, you can
@@ -20,7 +25,9 @@ import routes from './routes';
 export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
+    : process.env.VUE_ROUTER_MODE === 'history'
+    ? createWebHistory
+    : createWebHashHistory;
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -30,6 +37,29 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  Router.beforeEach(async (to, from, next) => {
+    const accountStore = useAccountStore();
+    try {
+      if (to.name !== 'login' && !localStorage.getItem('token')) {
+        destroyAuthentication();
+        next({
+          name: 'login',
+        });
+      } else if (!accountStore.email) {
+        await setAccountInfo();
+        next();
+      } else if (to.name === 'login') {
+        return next({ name: 'dashboard' });
+      } else next();
+    } catch (e) {
+      console.error(e);
+      destroyAuthentication();
+      next({
+        name: 'login',
+      });
+    }
   });
 
   return Router;

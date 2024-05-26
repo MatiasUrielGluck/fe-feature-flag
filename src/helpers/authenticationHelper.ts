@@ -3,7 +3,11 @@ import { login } from 'src/services/authentication.service';
 import { getAccountInfo } from 'src/services/account.service';
 import { useAccountStore } from 'stores/account-store';
 
-const accountStore = useAccountStore();
+export const setAccountInfo = async () => {
+  const accountStore = useAccountStore();
+  const accountResponse = await getAccountInfo();
+  accountStore.setAccount(accountResponse);
+};
 
 export const authenticate = async (loginRequest: LoginDTO) => {
   const loginResponse = await login(loginRequest);
@@ -13,11 +17,11 @@ export const authenticate = async (loginRequest: LoginDTO) => {
   localStorage.setItem('token', token);
   localStorage.setItem('expiration', JSON.stringify(expiration));
 
-  const accountResponse = await getAccountInfo();
-  accountStore.setAccount(accountResponse);
+  await setAccountInfo();
 };
 
 export const destroyAuthentication = () => {
+  const accountStore = useAccountStore();
   localStorage.clear();
   accountStore.resetAccount();
 };
