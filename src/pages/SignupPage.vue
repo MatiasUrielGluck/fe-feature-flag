@@ -1,10 +1,5 @@
 <template>
-  <authentication-layout
-    title="Login"
-    action="login"
-    :showErrorMsg="showErrorMsg"
-    @executeMain="onLogin"
-  >
+  <authentication-layout title="Sign up" action="sigup" @executeMain="onSignup">
     <template #form>
       <q-input
         v-model="email"
@@ -12,9 +7,24 @@
         label="Email"
         filled
         input-style="font-size: 17px"
+        :error="userAlreadyExists"
+        :rules="[(val) => required(val), (val) => isEmailValid(val)]"
       >
         <template v-slot:append>
           <q-icon name="email" />
+        </template>
+      </q-input>
+
+      <q-input
+        v-model.trim="fullName"
+        type="text"
+        label="Full name"
+        filled
+        input-style="font-size: 17px"
+        :rules="[(val) => required(val), (val) => minLength(val, 2)]"
+      >
+        <template v-slot:append>
+          <q-icon name="account_circle" />
         </template>
       </q-input>
 
@@ -24,7 +34,8 @@
         label="Password"
         filled
         input-style="font-size: 17px"
-        @keydown.enter="onLogin"
+        @keydown.enter="onSignup"
+        :rules="[(val) => isPasswordValid(val)]"
       >
         <template v-slot:append>
           <q-icon
@@ -40,41 +51,53 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import LoginDTO from 'src/dto/authentication/LoginDTO';
 import {
-  authenticate,
   destroyAuthentication,
+  makeSignup,
 } from 'src/helpers/authenticationHelper';
 import { useRouter } from 'vue-router';
 import AuthenticationLayout from 'layouts/AuthenticationLayout.vue';
 import { showSnackbar } from 'src/utils/snackbar';
 import { useAccountStore } from 'stores/account-store';
+import {
+  isEmailValid,
+  isPasswordValid,
+  minLength,
+  required,
+} from 'src/helpers/formValidationRules';
+import SignupDTO from 'src/dto/authentication/SignupDTO';
 
 defineOptions({
-  name: 'LoginPage',
+  name: 'SignupPage',
 });
 
 const router = useRouter();
 
 const email = ref('');
+const fullName = ref('');
 const password = ref('');
 const showPassword = ref(false);
-const showErrorMsg = ref(false);
+const userAlreadyExists = ref(false);
 
-const onLogin = async () => {
-  const loginDTO: LoginDTO = {
+const onSignup = async () => {
+  const signupDTO: SignupDTO = {
     email: email.value,
+    fullName: fullName.value,
     password: password.value,
   };
   try {
-    await authenticate(loginDTO);
+    userAlreadyExists.value = false;
+    await makeSignup(signupDTO);
     const accountStore = useAccountStore();
-    showSnackbar('success', `Welcome back, ${accountStore.fullName}!`);
+    showSnackbar('success', `Welcome, ${accountStore.fullName}!`);
     await router.push('/home');
   } catch (e) {
     console.error(e);
     destroyAuthentication();
-    showErrorMsg.value = true;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    if (e.response.status === 409) userAlreadyExists.value = true;
+    showSnackbar('error', 'Please try with another email');
   }
 };
 

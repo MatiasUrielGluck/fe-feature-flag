@@ -22,6 +22,13 @@ const routes: RouteRecordRaw[] = [
     meta: { transition: 'fade' },
   },
 
+  {
+    name: 'signup',
+    path: '/signup',
+    component: () => import('pages/SignupPage.vue'),
+    meta: { transition: 'fade' },
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {

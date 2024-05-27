@@ -42,16 +42,21 @@ export default route(function (/* { store, ssrContext } */) {
   Router.beforeEach(async (to, from, next) => {
     const accountStore = useAccountStore();
     try {
-      if (to.name !== 'login' && !localStorage.getItem('token')) {
+      if (
+        to.name !== 'login' &&
+        to.name !== 'signup' &&
+        !localStorage.getItem('token')
+      ) {
         destroyAuthentication();
         next({
           name: 'login',
         });
       } else if (!accountStore.email) {
-        await setAccountInfo();
+        if (localStorage.getItem('token')) await setAccountInfo();
+        if (accountStore.email) return next({ name: 'dashboard' });
         next();
-      } else if (to.name === 'login') {
-        return next({ name: 'dashboard' });
+      } else if (to.name === 'login' || to.name === 'signup') {
+        next({ name: 'dashboard' });
       } else next();
     } catch (e) {
       console.error(e);
