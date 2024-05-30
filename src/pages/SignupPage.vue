@@ -18,7 +18,7 @@
       <q-input
         v-model.trim="fullName"
         type="text"
-        label="Full name"
+        label="Full name / Company name"
         filled
         input-style="font-size: 17px"
         :rules="[(val) => required(val), (val) => minLength(val, 2)]"

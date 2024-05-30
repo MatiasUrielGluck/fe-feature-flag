@@ -34,3 +34,8 @@ export const destroyAuthentication = () => {
   localStorage.clear();
   accountStore.resetAccount();
 };
+
+export const logout = () => {
+  destroyAuthentication();
+  window.location.replace('/login');
+};
